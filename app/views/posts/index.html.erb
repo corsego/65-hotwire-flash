@@ -1,4 +1,6 @@
-<p style="color: green"><%= notice %></p>
+<div id="new_post">
+  <%= render partial: "posts/form", locals: {post: Post.new} %>
+</div>
 
 <h1>Posts</h1>
 
@@ -10,5 +12,3 @@
     </p>
   <% end %>
 </div>
-
-<%= link_to "New post", new_post_path %>

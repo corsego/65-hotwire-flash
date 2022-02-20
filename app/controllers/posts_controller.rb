@@ -25,9 +25,22 @@ class PostsController < ApplicationController
 
     respond_to do |format|
       if @post.save
+        flash.now[:notice] = "#{@post.id} added at #{Time.zone.now}"
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.update("new_post", partial: "posts/form", locals: {post: Post.new}),
+            turbo_stream.prepend("posts", partial: "posts/post", locals: {post: @post}),
+            turbo_stream.prepend("flash", partial: "layouts/flash")
+            # turbo_stream.update("flash", partial: "layouts/flash")
+            ]
+        end
         format.html { redirect_to post_url(@post), notice: "Post was successfully created." }
         format.json { render :show, status: :created, location: @post }
       else
+        format.turbo_stream do
+          render turbo_stream:
+            turbo_stream.update("new_post", partial: "posts/form", locals: {post: @post})
+        end
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @post.errors, status: :unprocessable_entity }
       end
